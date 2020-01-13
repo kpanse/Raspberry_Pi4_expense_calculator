@@ -2,13 +2,13 @@
 # Agile workflow manager
 # This project is for Raspberry Pi4 interface with Logitech Webcam using opencv libraries
 # Tickets Calculation Android apk to keep track 
-#
+# Maintain on Git
 # Input : Chart Boards and post-it notes video feed
 # Output: Expenditure, Income, Balance, TICKETS_INFO & PROGRESS INFO in excel format
 # =======================================================================================================
 
 # ===============================================================================================================================================
-# Libraries^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# Libraries
  
 # ===============================================================================================================================================
 
