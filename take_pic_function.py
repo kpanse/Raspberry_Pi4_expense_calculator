@@ -15,6 +15,7 @@
 import cv2
 import numpy as np
 import os
+import time 
 
 # ===============================================================================================================================================
 # Initialization
@@ -25,7 +26,9 @@ global break_flag_1
 global prev_pc
 global filename_1
 global change_flag
-
+global pic_cnt_a
+global pic_cnt_b
+global pic_cnt_c
 r=[70,40,120,80]
 cap = cv2.VideoCapture(1)
 ROI_status=0
@@ -33,9 +36,19 @@ ROI_status=0
 filename_1='a'
 pc_counter=1
 prev_pc=0
+pc=1
+
+frames=[]
+filenames=[]
 break_flag_1=False
 break_flag_2=False
 change_flag=False
+
+frame_cnt=0
+filename='a0.jpg'
+pic_cnt_a=0
+pic_cnt_b=0
+pic_cnt_c=0
 
 cv2.namedWindow('test')
 
@@ -44,99 +57,124 @@ cv2.namedWindow('test')
 # Functions
 # ===============================================================================================================================================
 
+def fname_gen(key,frame): 
+    
+    global pic_cnt_a
+    global pic_cnt_b
+    global pic_cnt_c
+    
+    if (key=='a'):
 
-# Function Takes snaps for testing data
+        pic_cnt_a+=1
+        filename=[chr(key_pressed)+'_'+str(pic_cnt_a-1)+'.png']
+ #       print(filename)
+#        save_image(frame,filename)
+        return filename
+    
+    elif (key=='b'):
 
-  
-# def take_pic(cap,pic_counter):
-    
-    # while(cap.isOpened()):
-    #   cv2.imshow('frame',frame) #display the captured image
-        # ret, frame = cap.read()
-        # if cv2.waitKey(1) & 0xFF == ord('y'): #save on pressing 'y' 
-            # cv2.imwrite('Pics/a'+ str(pic_counter) + '.png' ,frame)
-     #      img=frame
-            # cv2.destroyAllWindows()
-            # break
-    # cap.release()
-    # cap.destroyAllWindows()
-    
-    # pic_counter=pic_counter+1
-    # return pic_counter
+        pic_cnt_b+=1    
+        print(str(pic_cnt_b-1))
+        filename=[chr(key_pressed)+'_'+str(pic_cnt_b-1)+'.png']
+#            
+#        save_image(frame,filename)
+        return filename
 
-def store_pic(pc_counter,frame):
-    
-    global change_flag
-    global filename_1
-    global break_flag_2  
-    
-    if frame is not None:
-        
-        os.chdir(r"C:\Users\kpans_000\Desktop\Agile\Codes\Pics")
-        
-        if (change_flag==True):
             
-            filename_1=chr(ord(filename_1)+1)
-            print(change_flag)
+    elif (key=='c'):
 
-            change_flag = False
-            
-        img_name=[str(filename_1)+str(pc_counter-1)+'.jpg']
-        print('Output Filename: '+str(img_name))
-        print(np.shape(frame))
-        #cv2.imwrite(img_name,frame,[cv2.IMWRITE_JPEG_QUALITY, 90])
-        #cv2.imwrite(str(filename_1), a, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
-        #cv2.SaveImage(img_name,frame)
-        os.chdir(r"C:\Users\kpans_000\Desktop\Agile\Codes")
-        
-        return [1,img_name]
-        
+        pic_cnt_c+=1    
+        filename=[chr(key_pressed)+'_'+str(pic_cnt_c-1)+'.png']
+#            print(filename)          # will change to save_image(frame,filename) in all 3
+#        save_image(frame,filename)
+        return filename
+         
     else:
-        break_flag_2=True
-        return [-1,0]
-      
-def take_pic(frame,key_press):
+        print("Wrong input")
+        
 
-    global pc_counter
-    global break_flag_1 
-    global prev_pc
-    global change_flag
-#    while(cap.isOpened()):
+def save_image(frame,filename):
+    
+    path = os.getcwd()
+    path1=path+"\Pics"
+    os.chdir(path1)
+   
+    cv2.imwrite(str(filename),frame)
+   
+    os.chdir(path)
+# def store_pic(pc_counter,frame,key_press):
+    
+    # global change_flag
+    # global break_flag_2  
+    
+    # if frame is not None:
+        
+       # os.chdir(r"C:\Users\kpans_000\Desktop\Agile\Codes\Pics")
+        
+        # if (change_flag==True):
+            
+            # filename_1=key_press
+            # print(change_flag)
+
+            # change_flag = False
+            
+        # filename_1=key_press    
+        # img_name=[str(key_press)+str(pc_counter-1)+'.jpg']
+        # print('Output Filename: '+str(img_name))
+        # print(np.shape(frame))
+        # cv2.imwrite(img_name,frame,[cv2.IMWRITE_JPEG_QUALITY, 90])
+        # cv2.imwrite(str(filename_1), a, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+        # cv2.SaveImage(img_name,frame)
+       # os.chdir(r"C:\Users\kpans_000\Desktop\Agile\Codes")
+        
+        # return [1,img_name]
+        
+    # else:
+        # break_flag_2=True
+        # return [-1,0]
+      
+# def take_pic(frame,key_press):
+
+    # global pc_counter
+    # global break_flag_1 
+    # global prev_pc
+    # global change_flag
+   # while(cap.isOpened()):
        # cv2.imshow('img1',frame) #display the captured image
        # ret, frame = cap.read()
     
-    if (key_press == ord('q')):
-        break_flag_1=True
-        print('Exit due to q pressed')
+    # if (key_press == ord('q')):
+        # break_flag_1=True
+        # print('Exit due to q pressed')
 
-#        print('Pics/a.png'+str(pic_counter),frame)
- #       cv2.imwrite('Pics/a.png'+str(pic_counter),frame)
+       # print('Pics/a.png'+str(pic_counter),frame)
+       # cv2.imwrite('Pics/a.png'+str(pic_counter),frame)
     
-    elif (key_press == ord('x')):
+    # elif (key_press == ord('x')):
  
-        change_flag=True
-        pc_counter=1
- #       print('Now it will be b')
+        # change_flag=True
+        # pc_counter=1
+       # print('Now it will be b')
    
     
-    elif (key_press == ord('y')): #save on pressing 'y' 
+    # elif (key_press == ord('y')): #save on pressing 'y' 
 
-        if ((pc_counter!=-1) & (prev_pc!=pc_counter)):
-            temp,img_name=store_pic(pc_counter,frame)
-#            if temp[0]==1:
-#                cv2.imwrite(img_name,frame,[cv2.IMWRITE_JPEG_QUALITY, 90])
+        # if ((pc_counter!=-1) & (prev_pc!=pc_counter)):
+            # temp,img_name=store_pic(pc_counter,frame)
+           # if temp[0]==1:
+               # cv2.imwrite(img_name,frame,[cv2.IMWRITE_JPEG_QUALITY, 90])
                 
-            pc_counter+=1
+            # pc_counter+=1
         
         
-        if break_flag_2 == True:
-            print('Couldnt Store the image properly') 
+        # if break_flag_2 == True:
+            # print('Couldnt Store the image properly') 
             
-        prev_pc=pc_counter   
-        return pc_counter    
+        # prev_pc=pc_counter   
+        # return pc_counter    
     
-    else:
-        return -1
+    # else:
+        # return -1
 
         
 # This function takes binary image and returs output after morphological reforms
@@ -216,17 +254,40 @@ def select_ROI(frame):
 # press y three times to start recording pictures
 # press q to quit
 
-pc=1
-prev_pc=0
 while(cap.isOpened()):
     
-  
+    frame_cnt+=1
     ret, frame = cap.read()
     #if(take_pic(frame)=='None'):
      #   break
     #img=select_ROI(cap)
     key_pressed=cv2.waitKey(1) & 0xFF
-    pc=take_pic(frame,key_pressed)
+    
+    if key_pressed != 255:
+        
+#        print(chr(key_pressed)) 
+        key=chr(key_pressed)
+        filename=fname_gen(key,frame)
+        print(filename)
+        
+        if filename is not None:
+            filenames.append(filename)
+            frames.append(frame)
+#        save_image(frame,filename)
+    
+        if (key=='q'):
+            print('Mission Abort! Run')
+            break
+    # if key_pressed is not None:
+        
+        # filename=[str(key_pressed)+str(pic_cnt-1)+'.jpg']
+        # print(frame_cnt)
+        # print(key_pressed)
+        # print(filename)
+        
+
+#        save_image(frame,filename)
+#    pc=take_pic(frame,key_pressed)
 #    if ((pc!=-1) & (prev_pc!=pc)):
 #        store_pic(pc,frame)
 #cv2.imshow('frame',frame)
@@ -236,3 +297,28 @@ while(cap.isOpened()):
    
     if (break_flag_1==True):    
         break
+
+# print(len(filenames))
+# print(np.shape(filenames))
+# print(len(frames))
+# print(np.shape(frames))
+
+print(frames)            # Raspberry will send it to the server for processing. JSON format
+print(filenames)         # Raspberry will send it to the server for processing.  Json 
+ 
+# Write a code to read these values in JSON format and do some basic processing like displaying the image 
+ 
+
+# This is it for server
+for i in range(len(filenames)):
+    
+    save_image(frames[i],filenames[i][0])
+    # cv2.namedWindow('frame'+str(i))
+    # cv2.imshow('frame'+str(i),frame)
+    # print(filenames[i])
+    # time.sleep(5)
+    # i+=1
+    
+# print(frames)
+# print(filenames)
+

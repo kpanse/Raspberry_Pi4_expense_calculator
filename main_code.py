@@ -23,15 +23,22 @@ import os
 global pc_counter
 global break_flag_1
 global prev_pc
+global filename_1
+global change_flag
 
 r=[70,40,120,80]
 cap = cv2.VideoCapture(1)
 ROI_status=0
 
+filename_1='a'
 pc_counter=1
 prev_pc=0
 break_flag_1=False
 break_flag_2=False
+change_flag=False
+
+cv2.namedWindow('test')
+
 
 # ===============================================================================================================================================
 # Functions
@@ -56,30 +63,47 @@ break_flag_2=False
     
     # pic_counter=pic_counter+1
     # return pic_counter
-
-def store_pic(pc_counter,frame):
+def save_image(frame,filename):
     
+    cv2.imwrite(filename,frame)
+    
+def store_pic(pc_counter,frame,key_press):
+    
+    global change_flag
     global break_flag_2  
     
     if frame is not None:
         
         os.chdir(r"C:\Users\kpans_000\Desktop\Agile\Codes\Pics")
-        img_name=['a'+str(pc_counter-1)+'.png']
-        print(img_name)
-#        cv2.imwrite(img_name,frame)
+        
+        if (change_flag==True):
+            
+            filename_1=key_press
+            print(change_flag)
+
+            change_flag = False
+            
+        filename_1=key_press    
+        img_name=[str(key_press)+str(pc_counter-1)+'.jpg']
+        print('Output Filename: '+str(img_name))
+        print(np.shape(frame))
+        #cv2.imwrite(img_name,frame,[cv2.IMWRITE_JPEG_QUALITY, 90])
+        #cv2.imwrite(str(filename_1), a, [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+        #cv2.SaveImage(img_name,frame)
         os.chdir(r"C:\Users\kpans_000\Desktop\Agile\Codes")
         
-        return 1
+        return [1,img_name]
         
     else:
         break_flag_2=True
-        return -1
+        return [-1,0]
       
 def take_pic(frame,key_press):
 
     global pc_counter
     global break_flag_1 
     global prev_pc
+    global change_flag
 #    while(cap.isOpened()):
        # cv2.imshow('img1',frame) #display the captured image
        # ret, frame = cap.read()
@@ -87,11 +111,24 @@ def take_pic(frame,key_press):
     if (key_press == ord('q')):
         break_flag_1=True
         print('Exit due to q pressed')
+
+#        print('Pics/a.png'+str(pic_counter),frame)
+ #       cv2.imwrite('Pics/a.png'+str(pic_counter),frame)
+    
+    elif (key_press == ord('x')):
+ 
+        change_flag=True
+        pc_counter=1
+ #       print('Now it will be b')
+   
     
     elif (key_press == ord('y')): #save on pressing 'y' 
 
         if ((pc_counter!=-1) & (prev_pc!=pc_counter)):
-            store_pic(pc_counter,frame)
+            temp,img_name=store_pic(pc_counter,frame)
+#            if temp[0]==1:
+#                cv2.imwrite(img_name,frame,[cv2.IMWRITE_JPEG_QUALITY, 90])
+                
             pc_counter+=1
         
         
@@ -100,10 +137,6 @@ def take_pic(frame,key_press):
             
         prev_pc=pc_counter   
         return pc_counter    
-#        print('Pics/a.png'+str(pic_counter),frame)
- #       cv2.imwrite('Pics/a.png'+str(pic_counter),frame)
- 
-   
     
     else:
         return -1
@@ -188,18 +221,64 @@ def select_ROI(frame):
 
 pc=1
 prev_pc=0
+frame_cnt=0
+filename='a0.jpg'
+pic_cnt_a=0
+pic_cnt_b=0
+pic_cnt_c=0
+
 while(cap.isOpened()):
     
+    frame_cnt+=1
     ret, frame = cap.read()
     #if(take_pic(frame)=='None'):
      #   break
     #img=select_ROI(cap)
     key_pressed=cv2.waitKey(1) & 0xFF
-    pc=take_pic(frame,key_pressed)
+    
+    if key_pressed != 255:
+        
+#        print(chr(key_pressed)) 
+        key=chr(key_pressed)    
+        if (key=='a'):
+
+            pic_cnt_a+=1
+            filename=[chr(key_pressed)+'_'+str(pic_cnt_a-1)+'.jpg']
+            print(filename)
+    
+        elif (key=='b'):
+
+            pic_cnt_b+=1    
+            print(str(pic_cnt_b-1))
+            filename=[chr(key_pressed)+'_'+str(pic_cnt_b-1)+'.jpg']
+            print(filename)
+        #    print(s.replace('\n', ''))
+        #    print(fname_1)
+            
+        elif (key=='c'):
+            print("Yolo C")
+            pic_cnt_c+=1    
+            filename=[chr(key_pressed)+'_'+str(pic_cnt_c-1)+'.jpg']
+            print(filename)
+        
+        elif (key=='q'):
+            print('Mission Abort! Run')
+            break
+    # if key_pressed is not None:
+        
+        # filename=[str(key_pressed)+str(pic_cnt-1)+'.jpg']
+        # print(frame_cnt)
+        # print(key_pressed)
+        # print(filename)
+        
+
+#        save_image(frame,filename)
+#    pc=take_pic(frame,key_pressed)
 #    if ((pc!=-1) & (prev_pc!=pc)):
 #        store_pic(pc,frame)
 #cv2.imshow('frame',frame)
     cv2.imshow('frame',frame)
+    cv2.imshow('test',frame)
     prev_pc=pc
    
     if (break_flag_1==True):    
