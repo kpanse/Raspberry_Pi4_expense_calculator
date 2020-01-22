@@ -107,7 +107,87 @@ def save_image(frame,filename):
    
     os.chdir(path)
     
+#
+def path_image(filename):
+    
+    path = os.getcwd()
+    path1=str(path)+"\Inputs"+str(filename)
+    return path1
+#
+# This function takes binary image and returs output after morphological reforms
+#
+def thresholding(img):
 
+    ret,thresh1 = cv2.threshold(img,157,255,cv2.THRESH_BINARY)
+    kernel = np.ones((5,5),np.uint8)
+    dilation = cv2.dilate(thresh1,kernel,iterations = 1)
+    erosion = cv2.erode(dilation,kernel,iterations = 1)
+    dilation = cv2.dilate(erosion,kernel,iterations = 1)
+ #   opening = cv2.morphologyEx(erosion, cv2.MORPH_OPEN, kernel)
+
+    return dilation
+
+#
+# This function Detects the ROI and draws Rectangle
+# More research needed in this function 
+#
+
+
+
+def fname_gen2(key): 
+    
+    global pic_cnt_a
+    global pic_cnt_b
+    global pic_cnt_c
+    
+    if (key=='a'):
+
+        pic_cnt_a+=1
+        t='\ '
+        filename=[t+chr(key_pressed)+'_'+str(pic_cnt_a-1)+  '.png']
+ #       print(filename)
+#        save_image(frame,filename)
+        return filename
+    
+    elif (key=='b'):
+
+        pic_cnt_b+=1    
+        print(str(pic_cnt_b-1))
+        filename=[chr(key_pressed)+'_'+str(pic_cnt_b-1)+'.png']
+#            
+#        save_image(frame,filename)
+        return filename
+
+            
+    elif (key=='c'):
+
+        pic_cnt_c+=1    
+        filename=[chr(key_pressed)+'_'+str(pic_cnt_c-1)+'.png']
+#            print(filename)          # will change to save_image(frame,filename) in all 3
+#        save_image(frame,filename)
+        return filename
+         
+    else:
+        print("Wrong input")
+        
+
+
+def find_ROI(areas,contours,frame):
+    if (np.sum(np.shape(areas))>0):                       # Condition for checking if countours present without messing the rest of the code
+
+        if(max(areas)>4000):
+                
+            ROI_status=1                                  #  ROI detected  
+            max_ind = np.argmax(areas)
+            cnt=contours[max_ind]
+   
+            x,y,w,h = cv2.boundingRect(cnt)
+            cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+       
+#
+# This function calculates the Region of Interest (ROI) and displays live video with boundaries of ROI    
+#    r=cv2.selectROI(frame)  -  For manual ROI selection    
+#
 
 # ===============================================================================================================================================
 # Main Code
@@ -162,9 +242,10 @@ print(filenames)         # Raspberry will send it to the server for processing. 
  
 
 # This is it for server
+img_thresh=np.zeros(np.shape(frame))
 for i in range(len(filenames)):
-    
-    save_image(frames[i],filenames[i][0])
+    img_thresh=thresholding(frames[i])    
+    save_image(img_thresh,filenames[i][0])
 
 # print(frames)
 # print(filenames)
