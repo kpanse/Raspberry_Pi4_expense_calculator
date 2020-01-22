@@ -53,8 +53,10 @@ pic_cnt_a=0
 pic_cnt_b=0
 pic_cnt_c=0
 
+filename="a0.png"
 cv2.namedWindow('test')
-
+path1=os.getcwd()
+path=str(path1)+"\Inputs"+str(filename)
 
 #
 # =============================================================================
@@ -64,7 +66,7 @@ cv2.namedWindow('test')
 def path_image(filename):
     
     path = os.getcwd()
-    path1=path+"\Inputs"+filename
+    path1=str(path)+"\Inputs"+str(filename)
     return path1
 #
 # This function takes binary image and returs output after morphological reforms
@@ -147,29 +149,39 @@ def find_ROI(areas,contours,frame):
 key='a'
 #img=cv2.imread(path+filename)
 
-while(True):
+while(cap.isOpened()):
     
+    ret, frame=cap.read()
     key_pressed=cv2.waitKey(1) & 0xFF
-    
-    if key_pressed != 255:
+    key=chr(key_pressed)
+     
+     # img=cv2.imread(path)
+     
+    thresh_img=thresholding(frame)
+    cv2.imshow('test',thresh_img)
+     
+     
+     
+    if (key=='q'):
+   
+        print('Mission Abort! Run')
+        break
+          
+    # if key_pressed != 255:
         
-#        print(chr(key_pressed)) 
-        key=chr(key_pressed)
-        filename=fname_gen2(key)
-        path=path_image(filename)
-        img=cv2.imread(path)
+# #        print(chr(key_pressed)) 
+        # key=chr(key_pressed)
+        # filename=fname_gen2(key)
+        # path=path_image(filename)
+        # print(path)
 
-
-        thresh_img=thrsholding(img)
-        cv2.imshow('test',thresh_img)
+        # img=cv2.imread(path)
+        # thresh_img=thresholding(img)
+        # cv2.imshow('test',thresh_img)
               
-#        if filename is not None:
-#            filenames.append(filename)
-#            frames.append(frame)
-#        save_image(frame,filename)
+# #        if filename is not None:
+# #            filenames.append(filename)
+# #            frames.append(frame)
+# #        save_image(frame,filename)
     
-        if (key=='q'):
-            print('Mission Abort! Run')
-            break
         
-)
