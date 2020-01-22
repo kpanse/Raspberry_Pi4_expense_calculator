@@ -30,7 +30,8 @@ global pic_cnt_a
 global pic_cnt_b
 global pic_cnt_c
 r=[70,40,120,80]
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc('M','J','P','G'))
 ROI_status=0
 
 filename_1='a'
@@ -96,7 +97,7 @@ def fname_gen(key,frame):
 def save_image(frame,filename):
     
     path = os.getcwd()
-    path1=path+"\Pics"
+    path1=path+"/Pics"
     os.chdir(path1)
    
     cv2.imwrite(str(filename),frame)
@@ -291,7 +292,8 @@ while(cap.isOpened()):
 #    if ((pc!=-1) & (prev_pc!=pc)):
 #        store_pic(pc,frame)
 #cv2.imshow('frame',frame)
-    cv2.imshow('frame',frame)
+#    print(np.shape(frame))
+#    cv2.imshow('frame',frame)
     cv2.imshow('test',frame)
     prev_pc=pc
    
