@@ -52,7 +52,7 @@ pic_cnt_b=0
 pic_cnt_c=0
 
 cv2.namedWindow('test')
-
+cv2.namedWindow('frame')
 
 # ===============================================================================================================================================
 # Functions
@@ -224,7 +224,9 @@ while(cap.isOpened()):
             break
 
 #    cv2.imshow('frame',frame)
-    cv2.imshow('test',frame)
+    img_thresh=thresholding(frame)
+    cv2.imshow('frame',frame)
+    cv2.imshow('test',img_thresh)
     prev_pc=pc
    
     if (break_flag_1==True):    
