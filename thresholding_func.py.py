@@ -156,9 +156,10 @@ while(cap.isOpened()):
     key=chr(key_pressed)
      
      # img=cv2.imread(path)
-     
-    thresh_img=thresholding(frame)
-    cv2.imshow('test',thresh_img)
+
+    if (key_pressed!='None'):    
+        thresh_img=thresholding(frame)
+        cv2.imshow('test',thresh_img)
      
      
      
