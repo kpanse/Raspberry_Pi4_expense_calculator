@@ -15,7 +15,9 @@
 import cv2
 import numpy as np
 import os
-import time 
+import time
+import pygame
+
 
 # ===============================================================================================================================================
 # Initialization
@@ -34,10 +36,15 @@ cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc('M','J','P','G'))
 ROI_status=0
 
+pygame.init()
+j = pygame.joystick.Joystick(0)
+j.init()
+
 filename_1='a'
 pc_counter=1
 prev_pc=0
 pc=1
+key='a'
 
 frames=[]
 filenames=[]
@@ -70,7 +77,7 @@ def fname_gen(key,frame):
     if (key=='a'):
 
         pic_cnt_a+=1
-        filename=[chr(key_pressed)+'_'+str(pic_cnt_a-1)+'.png']
+        filename=[key+'_'+str(pic_cnt_a-1)+'.png']
  #       print(filename)
 #        save_image(frame,filename)
         return filename
@@ -79,7 +86,7 @@ def fname_gen(key,frame):
 
         pic_cnt_b+=1    
         print(str(pic_cnt_b-1))
-        filename=[chr(key_pressed)+'_'+str(pic_cnt_b-1)+'.png']
+        filename=[key+'_'+str(pic_cnt_b-1)+'.png']
 #            
 #        save_image(frame,filename)
         return filename
@@ -88,7 +95,7 @@ def fname_gen(key,frame):
     elif (key=='c'):
 
         pic_cnt_c+=1    
-        filename=[chr(key_pressed)+'_'+str(pic_cnt_c-1)+'.png']
+        filename=[key+'_'+str(pic_cnt_c-1)+'.png']
 #            print(filename)          # will change to save_image(frame,filename) in all 3
 #        save_image(frame,filename)
         return filename
@@ -172,17 +179,17 @@ def fname_gen2(key):
         
 
 
-def find_ROI(areas,contours,frame):
-    if (np.sum(np.shape(areas))>0):                       # Condition for checking if countours present without messing the rest of the code
+#def find_ROI(areas,contours,frame):
+#    if (np.sum(np.shape(areas))>0):                       # Condition for checking if countours present without messing the rest of the code
 
-        if(max(areas)>4000):
+#        if(max(areas)>4000):
                 
-            ROI_status=1                                  #  ROI detected  
-            max_ind = np.argmax(areas)
-            cnt=contours[max_ind]
+#            ROI_status=1                                  #  ROI detected  
+#            max_ind = np.argmax(areas)
+#            cnt=contours[max_ind]
    
-            x,y,w,h = cv2.boundingRect(cnt)
-            cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+#            x,y,w,h = cv2.boundingRect(cnt)
+#            cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
        
 #
 # This function calculates the Region of Interest (ROI) and displays live video with boundaries of ROI    
@@ -201,22 +208,69 @@ def find_ROI(areas,contours,frame):
 # press y three times to start recording pictures
 # press q to quit
 
-while(cap.isOpened()):
+frame_cnt=0
+try:
+    while(cap.isOpened()):
     
-    frame_cnt+=1
-    ret, frame = cap.read()
-    key_pressed=cv2.waitKey(1) & 0xFF
+        frame_cnt+=1
+        ret, frame = cap.read()
+
+
+        events = pygame.event.get()
     
-    if key_pressed != 255:
+        
+        for event in events:
+        
+            if event.type == pygame.JOYBUTTONDOWN:
+ #               print("Button Pressed")
+                
+                if j.get_button(3):
+                    print("Square Pressed")
+                    key='d'
+                elif j.get_button(0):
+                    print("X Pressed")
+                    key='a'    
+                elif j.get_button(1):
+                    print("Circle Pressed")
+                    key='b'
+                elif j.get_button(2):
+                    print("Triangle Pressed")
+                    key='c'
+                elif j.get_button(4):
+                    print("L1 Pressed")
+                elif j.get_button(5):
+                     print("R1 Pressed")
+                elif j.get_button(6):
+                     print("L2 Pressed")
+                elif j.get_button(7):
+                     print("R2 Pressed")
+                elif j.get_button(8):
+                     print("Share Pressed")
+                elif j.get_button(9):
+                    print("Options Pressed")
+                elif j.get_button(11):
+                    print("Left Analog Pressed")
+                elif j.get_button(12):
+                    print("Right Analog Pressed")
+                elif j.get_button(10):
+                    print("PS Button Pressed")
+                    key='q'
+                elif j.get_button(13):
+                    print("Touchpad Pressed")                    
+         
+
+#    key_pressed=cv2.waitKey(100) & 0xFF
+    
+#    if key_pressed != 255:
         
 #        print(chr(key_pressed)) 
-        key=chr(key_pressed)
-        filename=fname_gen(key,frame)
-        print(filename)
+#		print(np.shape(frame))
+                filename=fname_gen(key,frame)
+                print(filename)
         
-        if filename is not None:
-            filenames.append(filename)
-            frames.append(frame)
+                if filename is not None:
+                    filenames.append(filename)
+                    frames.append(frame)
 #        save_image(frame,filename)
     
         if (key=='q'):
@@ -224,31 +278,45 @@ while(cap.isOpened()):
             break
 
 #    cv2.imshow('frame',frame)
-    img_thresh=thresholding(frame)
-    cv2.imshow('frame',frame)
-    cv2.imshow('test',img_thresh)
-    prev_pc=pc
+
+        img_thresh=thresholding(frame)
+        cv2.imshow('frame',frame)
+        cv2.imshow('test',img_thresh)
+        prev_pc=pc
    
-    if (break_flag_1==True):    
-        break
+        if (break_flag_1==True):    
+            break
 
 # print(len(filenames))
 # print(np.shape(filenames))
 # print(len(frames))
 # print(np.shape(frames))
 
-print(frames)            # Raspberry will send it to the server for processing. JSON format
-print(filenames)         # Raspberry will send it to the server for processing.  Json 
+    print(frames)            # Raspberry will send it to the server for processing. JSON format
+    print(filenames)         # Raspberry will send it to the server for processing.  Json 
  
-# Write a code to read these values in JSON format and do some basic processing like displaying the image 
- 
+# Write a code to read these values in JSON format and do some basic processing like displaying the image
+
+    for i in range(len(filenames)):
+        img_thresh=thresholding(frames[i])
+        save_image(img_thresh,filenames[i][0])
+
+
+            
+            
+#            elif event.type == pygame.JOYBUTTONUP:
+#                print("Button Released")
+                
 
 # This is it for server
-img_thresh=np.zeros(np.shape(frame))
-for i in range(len(filenames)):
-    img_thresh=thresholding(frames[i])    
-    save_image(img_thresh,filenames[i][0])
+#img_thresh=np.zeros(np.shape(frame))
 
+except KeyboardInterrupt:
+    print("EXITING NOW")    
+    for i in range(len(filenames)):
+        img_thresh=thresholding(frames[i])
+        save_image(img_thresh,filenames[i][0])
+    j.quit()
 # print(frames)
 # print(filenames)
 
