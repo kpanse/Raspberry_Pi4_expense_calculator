@@ -174,7 +174,7 @@ try:
     
         frame_cnt+=1
         ret, frame = cap.read()
-        frames1=frames
+        frame1=frames
 
         events = pygame.event.get()
     
