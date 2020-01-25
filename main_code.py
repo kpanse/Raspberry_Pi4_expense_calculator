@@ -31,6 +31,8 @@ global change_flag
 global pic_cnt_a
 global pic_cnt_b
 global pic_cnt_c
+global pic_cnt_d
+
 r=[70,40,120,80]
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc('M','J','P','G'))
@@ -57,6 +59,7 @@ filename='a0.jpg'
 pic_cnt_a=0
 pic_cnt_b=0
 pic_cnt_c=0
+pic_cnt_d=0
 
 cv2.namedWindow('test')
 cv2.namedWindow('frame')
@@ -75,7 +78,7 @@ def fname_gen(key,frame):
     global pic_cnt_a
     global pic_cnt_b
     global pic_cnt_c
-    
+    global pic_cnt_d
     if (key=='a'):
 
         pic_cnt_a+=1
@@ -101,6 +104,15 @@ def fname_gen(key,frame):
 #            print(filename)          # will change to save_image(frame,filename) in all 3
 #        save_image(frame,filename)
         return filename
+
+    elif (key=='d'):
+
+        pic_cnt_d+=1    
+        filename=[key+'_'+str(pic_cnt_d-1)+'.png']
+#            print(filename)          # will change to save_image(frame,filename) in all 3
+#        save_image(frame,filename)
+        return filename
+
          
     else:
         print("Wrong input")
@@ -141,61 +153,7 @@ def thresholding(img):
 # More research needed in this function 
 #
 
-
-
-def fname_gen2(key): 
     
-    global pic_cnt_a
-    global pic_cnt_b
-    global pic_cnt_c
-    
-    if (key=='a'):
-
-        pic_cnt_a+=1
-        t='\ '
-        filename=[t+chr(key_pressed)+'_'+str(pic_cnt_a-1)+  '.png']
- #       print(filename)
-#        save_image(frame,filename)
-        return filename
-    
-    elif (key=='b'):
-
-        pic_cnt_b+=1    
-        print(str(pic_cnt_b-1))
-        filename=[chr(key_pressed)+'_'+str(pic_cnt_b-1)+'.png']
-#            
-#        save_image(frame,filename)
-        return filename
-
-            
-    elif (key=='c'):
-
-        pic_cnt_c+=1    
-        filename=[chr(key_pressed)+'_'+str(pic_cnt_c-1)+'.png']
-#            print(filename)          # will change to save_image(frame,filename) in all 3
-#        save_image(frame,filename)
-        return filename
-         
-    else:
-        print("Wrong input")
-        
-
-
-#def find_ROI(areas,contours,frame):
-#    if (np.sum(np.shape(areas))>0):                       # Condition for checking if countours present without messing the rest of the code
-
-#        if(max(areas)>4000):
-                
-#            ROI_status=1                                  #  ROI detected  
-#            max_ind = np.argmax(areas)
-#            cnt=contours[max_ind]
-   
-#            x,y,w,h = cv2.boundingRect(cnt)
-#            cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
-       
-#
-# This function calculates the Region of Interest (ROI) and displays live video with boundaries of ROI    
-#    r=cv2.selectROI(frame)  -  For manual ROI selection    
 #
 
 # ===============================================================================================================================================
