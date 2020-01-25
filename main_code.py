@@ -233,10 +233,6 @@ try:
                     frames.append(frame1)
 #        save_image(frame,filename)
     
-        if (key=='q'):
-            print('Mission Abort! Run')
-            break
-
 #    cv2.imshow('frame',frame)
 
         img_thresh=thresholding(frame)
