@@ -174,7 +174,7 @@ try:
     
         frame_cnt+=1
         ret, frame = cap.read()
-
+        frames1=frames
 
         events = pygame.event.get()
     
@@ -230,7 +230,7 @@ try:
         
                 if filename is not None:
                     filenames.append(filename)
-                    frames.append(frame)
+                    frames.append(frame1)
 #        save_image(frame,filename)
     
         if (key=='q'):
