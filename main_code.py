@@ -17,6 +17,7 @@ import numpy as np
 import os
 import time
 import pygame
+import subprocess as sp
 
 
 # ===============================================================================================================================================
@@ -34,28 +35,19 @@ global pic_cnt_c
 global pic_cnt_d
 
 r=[70,40,120,80]
-cap = cv2.VideoCapture(1)
-cap.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc('M','J','P','G'))
-ROI_status=0
-
-pygame.init()
-j = pygame.joystick.Joystick(0)
-j.init()
 
 filename_1='a'
+key='a'
+
 pc_counter=1
 prev_pc=0
 pc=1
-key='a'
 
 frames=[]
 filenames=[]
-break_flag_1=False
-break_flag_2=False
-change_flag=False
+filename='a0.jpg'
 
 frame_cnt=0
-filename='a0.jpg'
 pic_cnt_a=0
 pic_cnt_b=0
 pic_cnt_c=0
@@ -178,64 +170,78 @@ def thresholding(img):
 
 # press y three times to start recording pictures
 # press q to quit
+
+
+cap = cv2.VideoCapture(1)
+cap.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc('M','J','P','G'))
+ROI_status=0
+
+pygame.init()
+j = pygame.joystick.Joystick(0)
+j.init()
+stdoutdata = sp.getoutput("hcitool con")
 key="f"
 frame_cnt=0
+
+
 try:
     while(cap.isOpened()):
-    
+        
         frame_cnt+=1
         ret, frame = cap.read()
         frame1=frame
-
-        events = pygame.event.get()
-    
         
-        for event in events:
+        if "XX:XX:XX:XX:XX:XX" in stdoutdata.split():
+            print("Bluetooth device is connected")
         
-            if event.type == pygame.JOYBUTTONDOWN:
+            events = pygame.event.get()
+            
+            for event in events:
+        
+                if event.type == pygame.JOYBUTTONDOWN:
  #               print("Button Pressed")
                 
-                if j.get_button(3):
-                    print("Square Pressed")
-                    key='d'
-                elif j.get_button(0):
-                    print("X Pressed")
-                    key='a'    
-                elif j.get_button(1):
-                    print("Circle Pressed")
-                    key='b'
-                elif j.get_button(2):
-                    print("Triangle Pressed")
-                    key='c'
-                elif j.get_button(4):
-                    print("L1 Pressed")
-                elif j.get_button(5):
-                     print("R1 Pressed")
-                elif j.get_button(6):
-                     print("L2 Pressed")
-                elif j.get_button(7):
-                     print("R2 Pressed")
-                elif j.get_button(8):
-                     print("Share Pressed")
-                elif j.get_button(9):
-                    print("Options Pressed")
-                elif j.get_button(11):
-                    print("Left Analog Pressed")
-                elif j.get_button(12):
-                    print("Right Analog Pressed")
-                elif j.get_button(10):
-                    print("PS Button Pressed")
+                    if j.get_button(3):
+                        print("Square Pressed")
+                        key='d'
+                    elif j.get_button(0):
+                        print("X Pressed")
+                        key='a'    
+                    elif j.get_button(1):
+                        print("Circle Pressed")
+                        key='b'
+                    elif j.get_button(2):
+                        print("Triangle Pressed")
+                        key='c'
+                    elif j.get_button(4):
+                        print("L1 Pressed")
+                    elif j.get_button(5):
+                         print("R1 Pressed")
+                    elif j.get_button(6):
+                         print("L2 Pressed")
+                    elif j.get_button(7):
+                         print("R2 Pressed")
+                    elif j.get_button(8):
+                         print("Share Pressed")
+                    elif j.get_button(9):
+                        print("Options Pressed")
+                    elif j.get_button(11):
+                        print("Left Analog Pressed")
+                    elif j.get_button(12):
+                        print("Right Analog Pressed")
+                    elif j.get_button(10):
+                        print("PS Button Pressed")
                     #key='q'
-                elif j.get_button(13):
-                    print("Touchpad Pressed")                    
+                    elif j.get_button(13):
+                        print("Touchpad Pressed")                    
          
 
-                filename=fname_gen(key,frame)
-                print(filename)
+                    filename=fname_gen(key,frame)
+                    print(filename)
         
-                if filename is not None:
-                    filenames.append(filename)
-                    frames.append(frame1)
+                    if filename is not None:
+                        filenames.append(filename)
+                        frames.append(frame1)
 #        save_image(frame,filename)
 
         img_thresh1, img_thresh2 = thresholding(frame)
@@ -265,13 +271,5 @@ try:
 # This is it for server
 #img_thresh=np.zeros(np.shape(frame))
 
-except KeyboardInterrupt:
-    print("EXITING NOW")    
-    for i in range(len(filenames)):
-        img_thresh=thresholding(frames[i])
-        save_image(img_thresh,filenames[i][0])
-    j.quit()
-# print(frames)
-# print(filenames)
 
 
