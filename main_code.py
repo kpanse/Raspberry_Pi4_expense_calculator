@@ -34,7 +34,7 @@ global pic_cnt_c
 global pic_cnt_d
 
 r=[70,40,120,80]
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc('M','J','P','G'))
 ROI_status=0
 
