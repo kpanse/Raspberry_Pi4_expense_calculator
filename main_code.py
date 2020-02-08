@@ -139,14 +139,25 @@ def path_image(filename):
 #
 def thresholding(img):
 
+    lower_red1 = np.array([0,200,100], dtype = "uint8")
+    upper_red1 = np.array([5,255,255], dtype = "uint8")
+    lower_red2 = np.array([170,200,100], dtype = "uint8")
+    upper_red2 = np.array([179,255,255], dtype = "uint8")    
+    
     ret,thresh1 = cv2.threshold(img,157,255,cv2.THRESH_BINARY)
     kernel = np.ones((5,5),np.uint8)
     dilation = cv2.dilate(thresh1,kernel,iterations = 1)
     erosion = cv2.erode(dilation,kernel,iterations = 1)
     dilation = cv2.dilate(erosion,kernel,iterations = 1)
- #   opening = cv2.morphologyEx(erosion, cv2.MORPH_OPEN, kernel)
+    
+    mask_red1 = cv2.inRange(dilation, lower_red1, upper_red1)
+    mask_red2 = cv2.inRange(dilation, lower_red2, upper_red2)
+    mask_red = cv2.bitwise_or(mask_red1, mask_red2, mask = np.ones(np.shape(mask_red1)))
+    thresh_img = cv2.bitwise_and(img, img, mask = mask_red) 
 
-    return dilation
+#   opening = cv2.morphologyEx(erosion, cv2.MORPH_OPEN, kernel)
+
+    return thresh_img, dilation
 
 #
 # This function Detects the ROI and draws Rectangle
@@ -167,7 +178,7 @@ def thresholding(img):
 
 # press y three times to start recording pictures
 # press q to quit
-
+key="f"
 frame_cnt=0
 try:
     while(cap.isOpened()):
@@ -214,17 +225,11 @@ try:
                     print("Right Analog Pressed")
                 elif j.get_button(10):
                     print("PS Button Pressed")
-                    key='q'
+                    #key='q'
                 elif j.get_button(13):
                     print("Touchpad Pressed")                    
          
 
-#    key_pressed=cv2.waitKey(100) & 0xFF
-    
-#    if key_pressed != 255:
-        
-#        print(chr(key_pressed)) 
-#		print(np.shape(frame))
                 filename=fname_gen(key,frame)
                 print(filename)
         
@@ -232,42 +237,31 @@ try:
                     filenames.append(filename)
                     frames.append(frame1)
 #        save_image(frame,filename)
+
+        img_thresh1, img_thresh2 = thresholding(frame)
+        cv2.imshow('frame',img_thresh1)
+        cv2.imshow('test',img_thresh2)
+
+        key_pressed=cv2.waitKey(1) & 0xFF
     
-        if (key=='q'):
-            print('Mission Abort! Run')
-            break
+        if key_pressed != 255:
+            if (chr(key_pressed)=='q'):
+                print('Mission Abort! Run')
+                break
 
-#    cv2.imshow('frame',frame)
 
-        img_thresh=thresholding(frame)
-        cv2.imshow('frame',frame)
-        cv2.imshow('test',img_thresh)
         prev_pc=pc
    
-        if (break_flag_1==True):    
-            break
 
-# print(len(filenames))
-# print(np.shape(filenames))
-# print(len(frames))
-# print(np.shape(frames))
-
-    print(frames)            # Raspberry will send it to the server for processing. JSON format
+#    print(frames)            # Raspberry will send it to the server for processing. JSON format
     print(filenames)         # Raspberry will send it to the server for processing.  Json 
- 
-# Write a code to read these values in JSON format and do some basic processing like displaying the image
+
 
     for i in range(len(filenames)):
         img_thresh=thresholding(frames[i])
         save_image(img_thresh,filenames[i][0])
-
-
             
-            
-#            elif event.type == pygame.JOYBUTTONUP:
-#                print("Button Released")
-                
-
+       
 # This is it for server
 #img_thresh=np.zeros(np.shape(frame))
 
