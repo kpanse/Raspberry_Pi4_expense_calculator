@@ -58,6 +58,7 @@ cv2.namedWindow('frame')
 cv2.resizeWindow('test', 640,480)
 cv2.resizeWindow('frame', 640,480)
 
+
 # ===============================================================================================================================================
 # Functions
 # ===============================================================================================================================================
@@ -144,7 +145,7 @@ def thresholding(img):
     
     mask_red1 = cv2.inRange(dilation, lower_red1, upper_red1)
     mask_red2 = cv2.inRange(dilation, lower_red2, upper_red2)
-    mask_red = cv2.bitwise_or(mask_red1, mask_red2, mask = np.ones(np.shape(mask_red1)))
+    mask_red = cv2.bitwise_or(mask_red1, mask_red2)
     thresh_img = cv2.bitwise_and(img, img, mask = mask_red) 
 
 #   opening = cv2.morphologyEx(erosion, cv2.MORPH_OPEN, kernel)
@@ -172,104 +173,99 @@ def thresholding(img):
 # press q to quit
 
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc('M','J','P','G'))
 ROI_status=0
 
-pygame.init()
-j = pygame.joystick.Joystick(0)
-j.init()
 stdoutdata = sp.getoutput("hcitool con")
-key="f"
-frame_cnt=0
+if "1C:A0:B8:5C:BF:96" in stdoutdata.split():
+    print("Bluetooth device is connected")
+    pygame.init()
+    j = pygame.joystick.Joystick(0)
+    j.init()
 
 
-try:
-    while(cap.isOpened()):
+while(cap.isOpened()):
         
-        frame_cnt+=1
-        ret, frame = cap.read()
-        frame1=frame
+     frame_cnt+=1
+     ret, frame = cap.read()
+     frame1=frame
         
-        if "XX:XX:XX:XX:XX:XX" in stdoutdata.split():
-            print("Bluetooth device is connected")
+     if "1C:A0:B8:5C:BF:96" in stdoutdata.split():
+         print("Bluetooth device is connected")
         
-            events = pygame.event.get()
+         events = pygame.event.get()
             
-            for event in events:
+         for event in events:
         
-                if event.type == pygame.JOYBUTTONDOWN:
+            if event.type == pygame.JOYBUTTONDOWN:
  #               print("Button Pressed")
                 
-                    if j.get_button(3):
-                        print("Square Pressed")
-                        key='d'
-                    elif j.get_button(0):
-                        print("X Pressed")
-                        key='a'    
-                    elif j.get_button(1):
-                        print("Circle Pressed")
-                        key='b'
-                    elif j.get_button(2):
-                        print("Triangle Pressed")
-                        key='c'
-                    elif j.get_button(4):
-                        print("L1 Pressed")
-                    elif j.get_button(5):
-                         print("R1 Pressed")
-                    elif j.get_button(6):
-                         print("L2 Pressed")
-                    elif j.get_button(7):
-                         print("R2 Pressed")
-                    elif j.get_button(8):
-                         print("Share Pressed")
-                    elif j.get_button(9):
-                        print("Options Pressed")
-                    elif j.get_button(11):
-                        print("Left Analog Pressed")
-                    elif j.get_button(12):
-                        print("Right Analog Pressed")
-                    elif j.get_button(10):
-                        print("PS Button Pressed")
+                if j.get_button(3):
+                    print("Square Pressed")
+                    key='d'
+                elif j.get_button(0):
+                    print("X Pressed")
+                    key='a'    
+                elif j.get_button(1):
+                    print("Circle Pressed")
+                    key='b'
+                elif j.get_button(2):
+                    print("Triangle Pressed")
+                    key='c'
+                elif j.get_button(4):
+                    print("L1 Pressed")
+                elif j.get_button(5):
+                    print("R1 Pressed")
+                elif j.get_button(6):
+                     print("L2 Pressed")
+                elif j.get_button(7):
+                     print("R2 Pressed")
+                elif j.get_button(8):
+                     print("Share Pressed")
+                elif j.get_button(9):
+                    print("Options Pressed")
+                elif j.get_button(11):
+                    print("Left Analog Pressed")
+                elif j.get_button(12):
+                    print("Right Analog Pressed")
+                elif j.get_button(10):
+                    print("PS Button Pressed")
                     #key='q'
-                    elif j.get_button(13):
-                        print("Touchpad Pressed")                    
-         
+                elif j.get_button(13):
+                    print("Touchpad Pressed")                    
+     
 
-                    filename=fname_gen(key,frame)
-                    print(filename)
+                filename=fname_gen(key,frame)
+                print(filename)
         
-                    if filename is not None:
-                        filenames.append(filename)
-                        frames.append(frame1)
-#        save_image(frame,filename)
+                if filename is not None:
+                    filenames.append(filename)
+                    frames.append(frame1)         #        Later for save_image(frame,filename)
+        
+     else:
+        print("Controller Disconnected")
+            # Try to connect the controller here
+        
+     img_thresh1, img_thresh2 = thresholding(frame)
+     cv2.imshow('frame',img_thresh1)
+     cv2.imshow('test',img_thresh2)
 
-        img_thresh1, img_thresh2 = thresholding(frame)
-        cv2.imshow('frame',img_thresh1)
-        cv2.imshow('test',img_thresh2)
-
-        key_pressed=cv2.waitKey(1) & 0xFF
+     key_pressed=cv2.waitKey(1) & 0xFF
     
-        if key_pressed != 255:
-            if (chr(key_pressed)=='q'):
-                print('Mission Abort! Run')
-                break
+     if key_pressed != 255:
+        if (chr(key_pressed)=='q'):
+            print('Mission Abort! Run')
+            break
 
 
-        prev_pc=pc
+     prev_pc=pc
    
 
 #    print(frames)            # Raspberry will send it to the server for processing. JSON format
-    print(filenames)         # Raspberry will send it to the server for processing.  Json 
+print(filenames)         # Raspberry will send it to the server for processing.  Json 
 
 
-    for i in range(len(filenames)):
-        img_thresh=thresholding(frames[i])
-        save_image(img_thresh,filenames[i][0])
-            
-       
-# This is it for server
-#img_thresh=np.zeros(np.shape(frame))
-
-
-
+for i in range(len(filenames)):
+    img_thresh=thresholding(frames[i])
+    save_image(img_thresh,filenames[i][0])
